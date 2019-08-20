@@ -1,0 +1,24 @@
+{% extends 'registration/registration_index.html' %}
+{% load static %}
+{% load filter %}
+{% block find_doctor %}
+
+    <tr>
+        {% for doctor in doctors %}
+
+            <tr>
+                <td style="vertical-align:middle;">{{ doctor.fk_doctor_user.doctor_belong.depart_name }}</td>
+                <td style="vertical-align:middle;">{{ doctor.fk_doctor_user_id }}</td>
+                <td style="vertical-align:middle;">{{ doctor.fk_doctor_user.user_name }}</td>
+                <td style="vertical-align:middle;">{{ doctor.fk_doctor_user.user_gender }}</td>
+                <td style="vertical-align:middle;">{{ doctor.doctor_status }}</td>
+                <td style="vertical-align:middle;">{{ doctor.waiting_number }}</td>
+                <td style="vertical-align:middle;">
+                    <a href="{% url 'doctor_look' doctor_id=doctor.id%}">详情>>></a>
+                </td>
+            </tr>
+    {% endfor %}
+
+    </tr>
+
+{% endblock %}

@@ -1,0 +1,187 @@
+{% load static %}
+{% load filter %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更改挂号--中软高科-2015</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min(1).js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckeditor.js' %}"></script>
+
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            $('#backid').click(function () {
+                window.location.href = "{% url 'registration_index' %}";
+            });
+        });
+
+        function name_check(type, m, q) {
+            $.ajax({
+                url: '{% url 'registration_add' %}',
+                type: 'post',
+                datatype: 'json',
+                data: {
+                    "type": type,
+                    "n": m
+                },
+                success: (function (data) {
+                    if (data['status'] == 0) {
+                        $(q).html(data.msg)
+                    } else if (data["status"] == 2) {
+                        var doctor = '';
+                        for (var i in data.doctors) {
+                            doctor += '<option>' + data.doctors[i] + '</option>'
+                        }
+                        $(q).html(doctor)
+                    } else {
+                        $(q).html("")
+                    }
+                })
+            });
+        }
+
+        function all_check() {
+            name_check('姓名', patient_form.patient_name.value, '#name_msg');
+            name_check('年龄', patient_form.patient_age.value, '#age_msg');
+            name_check('身份证号', patient_form.patient_card.value, '#card_msg');
+            name_check('手机号', patient_form.patient_phone.value, '#phone_msg');
+            name_check('症状', patient_form.patient_status.value, '#status_msg');
+            name_check('过敏史', patient_form.patient_history.value, '#history_msg');
+            var name_msg = $('#name_msg').text();
+            var age_msg = $('#age_msg').text();
+            var card_msg = $('#card_msg').text();
+            var phone_msg = $('#phone_msg').text();
+            var status_msg = $('#status_msg').text();
+            var history_msg = $('#history_msg').text();
+            if (name_msg == "" && age_msg == "" && card_msg == "" && phone_msg == "" && status_msg == "" && history_msg == "") {
+                $.ajax({
+                        url: '{% url 'registration_add' %}',
+                        type: 'post',
+                        datatype: 'json',
+                        data: $('#patient_form').serialize(),
+                        success: (function (data) {
+                            location.href = "{% url 'registration_index' %}"
+                        })
+                    },
+                )
+            }
+        }
+
+        document.onkeydown = all_check;
+
+
+    </script>
+
+</head>
+<body>
+<form action="{% url 'registration_add' %}" id="patient_form" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>姓名</td>
+            <td><input type="text" name="patient_name" class="p_name"
+                       onblur="name_check('姓名',patient_form.patient_name.value,'#name_msg')"/>
+                <div id="name_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft">年龄</td>
+            <td><input type="text" name="patient_age" value=""
+                       onblur="name_check('年龄',patient_form.patient_age.value,'#age_msg')"/>
+                <div id="age_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>性别</td>
+            <td><input type="radio" name="patient_sex" value="男" checked/>男&nbsp;&nbsp;&nbsp;<input type="radio"
+                                                                                                    name="patient_sex"
+                                                                                                    value="女"/>女
+                <div id="sex_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>身份证号</td>
+            <td><input type="text" name="patient_card" value=""
+                       onblur="name_check('身份证号',patient_form.patient_card.value,'#card_msg')"/>
+                <div id="card_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>手机号</td>
+            <td><input type="text" name="patient_phone" value=""
+                       onblur="name_check('手机号',patient_form.patient_phone.value,'#phone_msg')"/>
+                <div id="phone_msg"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>所挂科室</td>
+            <td><select name="patient_depart" onchange="name_check('科室',patient_form.patient_depart.value,'#doctor')">
+                {% for depart in departs %}
+                    <option value="{{ depart.id }}">{{ depart.depart_name }}</option>
+                {% endfor %}
+            </select></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>指定医生</td>
+            <td><select name="patient_main_doctor" id="doctor">
+                {% for doctor in doctors %}
+                    <option>{{ doctor.user_name }}</option>
+                {% endfor %}
+            </select></td>
+
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft">症状</td>
+            <td><textarea name="patient_status"
+                          onblur="name_check('症状',patient_form.patient_status.value,'#status_msg')"></textarea>
+                <div id="status_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft">过敏史</td>
+            <td><textarea name="patient_history"
+                          onblur="name_check('过敏史',patient_form.patient_history.value,'#history_msg')"></textarea>
+                <div id="history_msg"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <center>
+                    <button type="button" class="btn btn-primary" onclick="all_check()">保存</button> &nbsp;&nbsp;<button
+                        type="submit" class="btn btn-success" name="backid" id="backid">返回列表
+                </button>
+                </center>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

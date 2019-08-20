@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>入院办理--中软高科-2015</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+{#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+	 $(function () {
+		$('#newNav').click(function(){
+				window.location.href="{% url 'enter_add' %}";
+		 });
+    });
+	
+    	function checkall(){
+			var alls=document.getElementsByName("check");
+			var ch=document.getElementById("checkall");
+			if(ch.checked){
+				for(var i=0;i<alls.length;i++){
+					alls[i].checked=true;	
+				}	
+			}else{
+				for(var i=0;i<alls.length;i++){
+					alls[i].checked=false;	
+				}
+			}
+		}
+		function delAll(){
+			var alls=document.getElementsByName("check");
+			var ids=new Array();
+			for(var i=0;i<alls.length;i++){
+				if(alls[i].checked){
+					ids.push(alls[i].value);
+				}		
+			}
+			if (ids.length > 0) {
+                $.ajax({
+                    url: '{% url "enter_del" %}',
+                    type: 'post',
+                    data: {'check':ids.toString()},
+                    success:function (data) {
+                        for (var i in data.check){
+                        $('#enter_del_'+data.check[i]).remove()}
+                    }
+                })
+        }else
+            {alert("请选中要操作的项");}
+        }
+    </script>
+</head>
+<body>
+
+<form action="{% url 'hospitalization' %}" method="post" class="definewidth m20">
+<table class="table table-bordered table-hover definewidth m10">
+    <tr>
+        <td width="10%" class="tableleft">病例号：</td>
+        <td><input type="text" name="card_name" value=""/></td>
+        <td colspan="5">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button type="submit" class="btn btn-primary" type="button">查询</button>
+            <button type="reset" class="btn btn-primary" type="button">清空</button>
+        </td>
+    </tr>
+</table>
+</form>
+   
+<table class="table table-bordered table-hover definewidth m10" >
+   <thead>
+    <tr>
+    	<th><input type="checkbox" id="checkall" onChange="checkall();"></th>
+        <th>病历号</th>
+        <th>姓名</th>
+{#        <th>床位号</th>#}
+{#        <th>联系电话</th>#}
+{#        <th>押金</th>#}
+        <th>主治医生</th>
+        <th>入院时间</th>
+        <th>科室</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    {% for foo in messages %}
+         <tr id="enter_del_{{ foo.id }}">
+         	<td style="vertical-align:middle;"><input type="checkbox" name="check" value="{{ foo.id }}"></td>
+            <td style="vertical-align:middle;">{{ foo.id }}</td>
+            <td style="vertical-align:middle;">{{ foo.patient_name }}</td>
+{#            <td style="vertical-align:middle;">4343</td>#}
+{#            <td style="vertical-align:middle;">13127653423</td>#}
+{#            <td style="vertical-align:middle;">2000元</td>#}
+            <td style="vertical-align:middle;">{{ foo.fk_patient_doctor.fk_doctor_user.user_name }}</td>
+            <td style="vertical-align:middle;">{{ foo.patient_one_enter_time|date:"Y-m-d H:i:s" }}</td>
+            <td style="vertical-align:middle;">{{ foo.fk_patient_depart.depart_name }}</td>
+            <td style="vertical-align:middle;">{{ foo.patient_status }}</td>
+            <td style="vertical-align:middle;">
+				<a href="{% url 'look' foo.id %}">详情</a>&nbsp;&nbsp;&nbsp;
+				<a href="{% url 'edit' foo.id %}">更改</a>&nbsp;&nbsp;&nbsp;
+				<a href="{% url 'add_many' foo.id %}">缴纳押金</a>&nbsp;&nbsp;&nbsp;
+
+			</td>
+        </tr>
+    {% endfor %}
+
+  </table>
+  <table class="table table-bordered table-hover definewidth m10" >
+  	<tr>
+        <th colspan="5">
+{#        <div class="inline pull-right page">#}
+           <ul class="pagination pull-right page" style="margin: 0 0">
+                <li><a href="?page=1">首页</a></li>
+                {% if messages.has_previous %}
+                <li><a href="?page={{ messages.previous_page_number }}">上一页</a></li>
+                {% endif %}
+                {% for num in messages.paginator.page_range %}
+                <li><a href="?page={{ num }}">{{ num }}</a></li>
+                {% endfor %}
+                {% if messages.has_next %}
+                <li><a href="?page={{ messages.next_page_number }}">下一页</a></li>
+                {% endif %}
+                {% if messages %}
+                <li><a href="?page={{ messages.paginator.num_pages }}">尾页</a></li>
+                {% endif %}
+            </ul>
+
+        <button type="button" class="btn btn-success" id="newNav">添加住院信息</button>
+            <a href="{% url 'export_excel' %}"><button type="button" class="btn btn-success" id="delPro">导出Excel</button></a>
+
+        <button type="button" class="btn btn-success" id="delPro" onClick="delAll()">删除勾选内容</button>
+		 </th>
+    </tr>
+
+  </table>
+</body>
+</html>

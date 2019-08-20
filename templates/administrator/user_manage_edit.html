@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script>
+        $(function () {
+            $('#backid').click(function () {
+                window.location.href = "{% url 'administrator_index' %}";
+            });
+        });
+    </script>
+</head>
+<body>
+
+{#{% if user.user_role_id == 4 %}#}
+<form action="{% url 'user_manage_edit' user_id=user.id %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>姓名</td>
+            <td><input type="text" name="user_name" value="{{ user.user_name }}"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>性别</td>
+            <td><input type="text" name="user_gender" value="{{ user.user_gender }}"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>年龄</td>
+            <td><input type="text" name="user_age" value="{{ user.user_age }}"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>学历</td>
+            <td><input type="text" name="user_level" value="{{ user.user_level }}"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>角色</td>
+{#            <td><input type="text" name="user_role" value="{{ role.role_name }}"></td>#}
+{#            <td>{{ role.role_name }}</td>#}
+            <td>
+            	<select name="user_role">
+        			{% comment %}<option value="">--请选择--
+        			<option value="1">药房
+        			<option value="2">缴费处
+            		<option value="3">挂号
+            		<option value="4">医生{% endcomment %}
+{#                    <option selected="{{ role.role_name }}">#}
+        			<option>药房
+        			<option>缴费处
+            		<option>挂号
+{#            		<option>医生#}
+       			 </select>
+        	</td>
+        </tr>
+
+        {% if department %}
+            <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>所属科室</td>
+            <{% comment %}td><input type="text" name="user_depart" value="{{ department.depart_name }}"></td>{% endcomment %}
+            <td>
+                <select name="user_depart">
+                    <option value="">--请选择--
+                    <option>外科</option>
+                    <option>心血管科</option>
+                    <option>急诊科</option>
+                    <option>骨科</option>
+                </select>
+            </td>
+
+            </tr>
+        {% endif %}
+
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>状态</td>
+            <td>
+{#                {{ user.user_status }}  &nbsp;#}
+
+                <input type="radio"  name="user_status" value="启用">&nbsp;启用&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="user_status" value="禁用">&nbsp;禁用
+
+             {% comment %}   <a href="{% url 'user_start_use' user_id=user.id %}" >启用</a>&nbsp;&nbsp;
+                <a href="{% url 'user_stop_use' user_id=user.id %}" >禁用</a>{% endcomment %}
+
+            </td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>身份证号</td>
+            <td><input type="text" name="user_card" value="{{ user.user_card }}"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>电话号码</td>
+            <td><input type="text" name="user_phone" value="{{ user.user_phone }}"></td>
+{#            <td><input type="text" name="user_phone" value="{{ user.user_phone }}" pattern="^(0|86|17951)?(13[0-9]|15[012356789]|17[0678]|18[0-9]|14[57])[0-9]{8}" minlength="11" maxlength="11" placeholder="请输入11位手机号码" ></td>#}
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>电子邮箱</td>
+            <td><input type="text" name="user_email" value="{{ user.user_email }}"></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <center>
+                    <button type="submit" class="btn btn-primary" type="button">保存
+                    </button>
+                    &nbsp;&nbsp;
+
+                    <a href="{% url 'user_manage' %}">
+                        <button type="button" class="btn btn-success" name="backid" id="backid">返回列表
+                        </button>
+                    </a>
+                </center>
+            </td>
+        </tr>
+    </table>
+
+</form>
+
+
+
+
+
+</body>
+</html>

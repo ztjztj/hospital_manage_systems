@@ -1,0 +1,407 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医院注册系统</title>
+    <script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script>
+        $(function () {
+            $('#user_role').click(function () {
+                select = $('#user_role').val();
+                {#alert(select)#}
+                $.ajax({
+                    'url': '{% url 'profession' %}',
+                    'type': 'post',
+                    'data': {'select': select},
+                    //$('#frm_login').serialize(),//将表单中所有带有name属性的value属性值提交到后台
+                    'dataType': 'json'
+                }).success(function (data) {
+
+                    //alert(data.status)
+                    if (data.status == 4) {
+                        if ($('#depar').is(':hidden')) {
+                            //alert(data.status)
+                            $('#depar').show();
+                        } else {
+                            $('#depar').hide();
+                        }
+                    } else {
+                        $('#depar').hide();
+                    }
+                })
+            })
+            //服务器成功处理客户端请求后自动回调的函数
+        });
+
+        function get_code() {
+            var phone = document.getElementById("phone");
+            if (phone.validity.valueMissing === true) {
+                alert()
+            } else if (sex.validity.patternMismatch === true) {
+                phone.setCustomValidity("不符合格式");
+                return;
+            } else {
+                phone.setCustomValidity("");
+            }
+            phone = $("#phone").val();
+            $.post('{% url "get_phone_code" %}', {'phone': phone}, function (data) {
+                if (data.Message === "OK") {
+                    alert('验证码已经发送到您的手机，请注意查收！');
+                    frm_login.verify_code.focus()
+                }
+            }, "json")
+
+        }
+
+    </script>
+</head>
+<style>
+    .screenbg {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: -999;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+    }
+
+    .screenbg ul li {
+        display: block;
+        list-style: none;
+        position: fixed;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1000;
+        float: right;
+    }
+
+    .screenbg ul a {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        cursor: default;
+    }
+
+    .screenbg a img {
+        vertical-align: middle;
+        display: inline;
+        border: none;
+        display: block;
+        list-style: none;
+        position: fixed;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1000;
+        float: right;
+    }
+</style>
+<body>
+<div align="center" style="color: #0e90d2">
+    <h1>医&nbsp;&nbsp;&nbsp;院&nbsp;&nbsp;&nbsp;注&nbsp;&nbsp;&nbsp;册&nbsp;&nbsp;&nbsp;系&nbsp;&nbsp;&nbsp;统</h1>
+</div>
+<div align="center">
+    <div style="width: 200px;">
+        <form method="post" id="patient_form">
+            <table>
+                <tr>
+                    <td style="width:45px;text-align: right">账&nbsp;&nbsp;&nbsp;&nbsp;号：</td>
+                    <td><input id="nicknum" name="nicknum" type="text" class="register_input" required="required"
+                               pattern="^[A-Za-z][A-Za-z0-9]{5,11}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">姓&nbsp;&nbsp;&nbsp;&nbsp;名：</td>
+                    <td><input id="nickName" name="nickName" type="text" class="register_input" required="required"
+                               pattern="^\d*[\u4e00-\u9fa5]*$"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">年&nbsp;&nbsp;&nbsp;&nbsp;龄：</td>
+                    <td><input id="age" name="age" type="text" class="register_input" required="required"
+                               pattern="^(?:[1-9][0-9]?|1[01][0-9]|120)$"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">性&nbsp;&nbsp;&nbsp;&nbsp;别：</td>
+                    <td><input id="sex" name="sex" type="text" class="register_input" required="required"
+                               pattern="^['男'|'女']$"/></td>
+                </tr>
+                <tr>
+                    <td>学历：</td>
+                    <td>
+                        <select id="education" name="education">
+                            <option value="请选择" name="education">请选择</option>
+                            <option value="小学学历" name="education">小学学历</option>
+                            <option value="初中学历" name="education">初中学历</option>
+                            <option value="高中学历" name="education">高中学历</option>
+                            <option value="专科学历" name="education">专科学历</option>
+                            <option value="本科学历" name="education">本科学历</option>
+                            <option value="硕士学历" name="education">硕士学历</option>
+                            <option value="博士学历" name="education">博士学历</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">身份证：</td>
+                    <td><input id="identity" name="identity" type="text" class="register_input" required="required"
+                               pattern="^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">手机号：</td>
+                    <td><input id="phone" name="phone" type="text" class="register_input" required="required"
+                               pattern="^1[3456789]\d{9}$"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">密码：</td>
+                    <td><input id="pwd" name="pwd" type="password" class="register_input" required="required"
+                               pattern="[a-zA-Z0-9]{6,20}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45px;text-align: right">再输入：</td>
+                    <td><input id="repwd" type="password" class="register_input" required="required"
+                               pattern="[a-zA-Z0-9]{6,20}"/>
+                    </td>
+                </tr>
+{#                <tr>#}
+{#                    <td style="width:45px;text-align: right">验证码：</td>#}
+{#                    <td><input id="yzm" type="text" class="register_input" required="required"#}
+{#                               pattern="^\d{6}$"/>#}
+{#                    </td>#}
+{#                </tr>#}
+                <tr>
+                    <td style="width:45px;text-align: right">职位：</td>
+                    <td>
+                        <select id="user_role" name="user_role">
+                            {% for r in role %}
+                                <option value="{{ r.id }}" name='user_role' id="user_role">{{ r.role_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr id="depar" hidden>
+                    <td>科室：</td>
+                    <td>
+                        <select name="doctor_belong">
+                            {% for foo in depart %}
+                                <option value="{{ foo.id }}" name="doctor_belong">{{ foo.depart_name }}</option>
+                            {% endfor %}
+
+                        </select>
+                    </td>
+                </tr>
+{#                <tr>#}
+{#                    <td class="registerBtn" colspan="2" style="text-align: center">#}
+{#                        <input id="yzmbt" type="button" onclick="get_code()" style="height:30px;width: 185px; position: relative;top: 10px;text-align: center;background-color: #0056C0;border: solid 1px #ddd;border-radius: 4px;font-size: 12px;#}
+{#" value="获取验证码"/>#}
+{#                    </td>#}
+{#                </tr>#}
+                <tr>
+                    <td class="registerBtn" colspan="2" style="text-align: center">
+                        <input id="registerBtn" type="submit" onclick="register()"
+                               style="height:30px;width: 185px; position: relative;top: 10px;text-align: center;background-color: #0056C0"
+                               value="注册"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+
+    </div>
+    <script>
+        function register() {
+            var num = document.getElementById("nicknum");
+            if (num.validity.valueMissing === true) {
+                num.setCustomValidity("账号不能为空!");
+                return;
+            } else if (num.validity.patternMismatch === true) {
+                num.setCustomValidity("账号以字母开头，由字母和数字组成 6-12位");
+                return;
+            } else {
+                $.ajax({
+                    url: '{% url 'usernum_is' %}',
+                    type: 'post',
+                    dataType: 'Json',
+                    async: 'false',
+                    data: {'nicknum': $('#nicknum').val()},
+                    success: (function (date) {
+                        if (date.successes === 0) {
+                            num.setCustomValidity("已被使用");
+                        } else {
+                            num.setCustomValidity("");
+                        }
+                    }),
+                });
+                var name = document.getElementById("nickName");
+                if (name.validity.valueMissing === true) {
+                    name.setCustomValidity("姓名不能为空!");
+                    return;
+                } else if (name.validity.patternMismatch === true) {
+                    name.setCustomValidity("必须为中文");
+                    return;
+                } else {
+                    $.ajax({
+                        url: '{% url 'username_is' %}',
+                        type: 'post',
+                        dataType: 'Json',
+                        async: 'false',
+                        data: {'username': $('#nickName').val()},
+                        success: (function (date) {
+                            if (date.successes === 0) {
+                                name.setCustomValidity("已被使用");
+                            } else {
+                                name.setCustomValidity("");
+                            }
+                        }),
+                    });
+                    var age = document.getElementById("age");
+                    if (age.validity.valueMissing === true) {
+                        age.setCustomValidity("年龄不能为空!");
+                        return;
+                    } else if (age.validity.patternMismatch === true) {
+                        age.setCustomValidity("年龄为1-120间整数");
+                        return;
+                    } else {
+                        age.setCustomValidity("");
+                    }
+
+                    var sex = document.getElementById("sex");
+                    if (sex.validity.valueMissing === true) {
+                        sex.setCustomValidity("性别不能为空!");
+                        return;
+                    } else if (sex.validity.patternMismatch === true) {
+                        sex.setCustomValidity("只能输入男女");
+                        return;
+                    } else {
+                        sex.setCustomValidity("");
+                    }
+                    var educations = document.getElementById("education");
+                    if (educations.value === "请选择") {
+                        educations.setCustomValidity("请选择学历");
+                        return;
+                    } else {
+                        educations.setCustomValidity("");
+                    }
+
+
+                    var identity = document.getElementById("identity");
+                    if (identity.validity.valueMissing === true) {
+                        identity.setCustomValidity("身份证不能为空!");
+                        return;
+                    } else if (sex.validity.patternMismatch === true) {
+                        identity.setCustomValidity("不符合格式");
+                        return;
+                    } else {
+                        $.ajax({
+                            url: '{% url 'identity_is' %}',
+                            type: 'post',
+                            dataType: 'Json',
+                            async: 'false',
+                            data: {'identity': $('#identity').val()},
+                            success: (function (data) {
+                                if (data.successes === 0) {
+                                    identity.setCustomValidity("已被使用");
+                                } else {
+                                    identity.setCustomValidity("");
+                                }
+                            }),
+                        });
+                        var phone = document.getElementById("phone");
+                        if (phone.validity.valueMissing === true) {
+                            phone.setCustomValidity("手机号不能为空!");
+                            return;
+                        } else if (sex.validity.patternMismatch === true) {
+                            phone.setCustomValidity("不符合格式");
+                            return;
+                        } else {
+                            $.ajax({
+                                url: '{% url 'phone_is' %}',
+                                type: 'post',
+                                dataType: 'Json',
+                                async: 'false',
+                                data: {'phone': $('#phone').val()},
+                                success: (function (data) {
+                                    if (data.successes === 0) {
+                                        phone.setCustomValidity("已被使用");
+                                    } else {
+                                        phone.setCustomValidity("");
+                                    }
+                                }),
+                            });
+
+                            var pwd = document.getElementById("pwd");
+                            if (pwd.validity.valueMissing === true) {
+                                pwd.setCustomValidity("密码不能为空!");
+                                return;
+                            } else if (pwd.validity.patternMismatch === true) {
+                                pwd.setCustomValidity("密码必须是6-20位的英文和数字！");
+                                return;
+                            } else {
+                                pwd.setCustomValidity("");
+                            }
+
+                            var rpwd = document.getElementById("repwd");
+                            if (rpwd.validity.valueMissing === true) {
+                                rpwd.setCustomValidity("密码不能为空!");
+                                return;
+                            } else if (rpwd.value !== pwd.value) {
+                                rpwd.setCustomValidity("两次输入的密码不一样！");
+                                return;
+                            } else {
+                                rpwd.setCustomValidity("");
+                            }
+
+                            {#var yzm = document.getElementById("yzm");#}
+                            {#if (yzm.validity.valueMissing === true) {#}
+                            {#    yzm.setCustomValidity("验证码不能为空!");#}
+                            {#    return;#}
+                            {# } else {#}
+                            {#    yzm.setCustomValidity("");#}
+                            {# }#}
+
+                            var post = document.getElementById("post");
+                            if (post.value === "请选择职位") {
+                                post.setCustomValidity("请选择职位！");
+                            } else {
+                                if (status === 5) {
+                                    alert(status);
+                                    post.setCustomValidity("");
+                                } else {
+                                    alert('请修改信息后请重新提交')
+                                }
+                            }
+
+                        }
+
+                    }
+
+
+                }
+            }
+        }
+
+        document.onkeydown = register;
+    </script>
+</div>
+<div class="screenbg">
+    <ul>
+        <li><a href="javascript:"><img src="{% static 'image/01.jpg' %}"></a></li>
+    </ul>
+</div>
+
+</body>
+</html>

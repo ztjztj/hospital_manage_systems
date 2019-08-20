@@ -1,0 +1,240 @@
+{% load static %}
+{% load filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>门诊医生--中软高科-2015</title>
+    {#    加载过滤器#}
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            $('#newNav').click(function () {
+                window.location.href = "{% url 'doctor_manage_add' %}";
+            });
+        });
+
+        function checkall() {
+            var alls = document.getElementsByName("check");
+            var ch = document.getElementById("checkall");
+            if (ch.checked) {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = false;
+                }
+            }
+        }
+
+        function delAll1() {
+            var alls = document.getElementsByName("d_box");
+            var ids = new Array();
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    ids.push(alls[i].value);
+                }
+            }
+            if (ids.length > 0) {
+
+                if (confirm("确认操作?")) {
+                    $.ajax({
+                        url: "{% url 'doctor_manage_del_box' %}",
+                        type: 'POST',
+                        data: {
+                            ids: ids + ''
+                        },
+                        cache: true,
+                        success: function (data) {
+                            alert(data['status']);
+
+                        }
+                    });
+                }
+            } else {
+                alert("请选中要操作的项");
+            }
+        }
+    </script>
+</head>
+<body>
+
+{#    查询页面      #}
+<form action="{% url 'doctor_manage_search' %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td colspan="6">
+                <center>
+            <td>姓名：&nbsp;
+                <input type="text" name="d_content" placeholder="通过姓名查询">
+                <button type="submit"  class="btn btn-success">查询</button>
+            </td>
+            </center>
+            <td>
+                <a href="{% url 'doctor_manage' %}">
+                    <button type="button" class="btn btn-success" name="backid" id="backid">返回列表</button>
+                </a>
+            </td>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+{#     查询表格     #}
+{% if name %}
+    <table class="table table-bordered table-hover definewidth m10">
+        <thead>
+        <tr>
+{#            <th>所属科室</th>#}
+            <th>姓名</th>
+            <th>编号</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>状态</th>
+            <th>电话号码</th>
+            <th>操作</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+{#                <td style="vertical-align:middle;">{{ user.doctor_belong_id }}</td>#}
+                <td style="vertical-align:middle;">{{ user.user_name }}</td>
+                <td style="vertical-align:middle;">{{ user.id }}</td>
+                <td style="vertical-align:middle;">{{ user.user_gender }}</td>
+                <td style="vertical-align:middle;">{{ user.user_age }}</td>
+                <td style="vertical-align:middle;">{{ user.user_status }}</td>
+                <td style="vertical-align:middle;">{{ user.user_phone }}</td>
+                <td style="vertical-align:middle;">
+                    <a href="{% url 'doctor_manage_look' user_id=user.id %}">详情</a>
+                    &nbsp;&nbsp;
+                    <a href="{% url 'doctor_manage_edit' user_id=user.id %}">更改</a>
+                    &nbsp;&nbsp;
+                    <a href="{% url 'doctor_manage_del' user_id=user.id %}">删除</a>
+                    &nbsp;&nbsp;
+                    <p></p>
+                </td>
+                <td><input type="checkbox" id="checkall" onChange="checkall();"></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% else %}
+    {#           首页表格        #}
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td>
+                {% for department in departments %}
+                    &nbsp;<a href="{% url 'doctor_manage_type_look' id=department.id %}"><input  type="button" value="{{ department.depart_name }}" class="btn btn-success"></a>&nbsp;
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+
+
+
+
+<table class="table table-bordered table-hover definewidth m10">
+<thead>
+<tr>
+    <th>姓名</th>
+{#            <th>科室</th>#}
+    <th>编号</th>
+    <th>性别</th>
+    <th>年龄</th>
+    <th>状态</th>
+    <th>电话号码</th>
+    <th>操作</th>
+    <th></th>
+</tr>
+</thead>
+<tbody>
+    {% for user in users %}
+        <tr>
+            <td style="vertical-align:middle;">{{ user.user_name }}</td>
+{#                    <td style="vertical-align:middle;">{{ user.doctor_belong_id }}</td>#}
+            <td style="vertical-align:middle;">{{ user.id }}</td>
+            <td style="vertical-align:middle;">{{ user.user_gender }}</td>
+            <td style="vertical-align:middle;">{{ user.user_age }}</td>
+            <td style="vertical-align:middle;">{{ user.user_status }}</td>
+            <td style="vertical-align:middle;">{{ user.user_phone }}</td>
+            <td style="vertical-align:middle;">
+                <a href="{% url 'doctor_manage_look' user_id=user.id %}">详情</a>
+                &nbsp;&nbsp;
+                <a href="{% url 'doctor_manage_edit' user_id=user.id %}">更改</a>
+                &nbsp;&nbsp;
+                <a href="{% url 'doctor_manage_del' user_id=user.id %}">删除</a>
+                &nbsp;&nbsp;
+                <p></p>
+            </td>
+            <td><input type="checkbox" id="checkall" onChange="checkall();"></td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+
+
+
+
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <th colspan="5">
+                <div class="inline pull-right page">
+                    <a href='#'>第一页</a> <a href='#'>上一页</a> <span class='current'>1</span><a href='#'>2</a><a
+                        href='/chinapost/index.php?m=Label&a=index&p=3'>3</a><a href='#'>4</a><a href='#'>5</a> <a
+                        href='#'>下一页</a>
+                    <a href='#'>最后一页</a>
+                    &nbsp;&nbsp;&nbsp;共<span class='current'>32</span>条记录<span class='current'> 1/33 </span>页
+                </div>
+                <div>
+                    {#                        <form action="{% url 'doctor_manage_del_box' %}" method="post">#}
+                    <button type="button" class="btn btn-success" id="delPro" onClick="delAll1();">删除选中
+                    </button>
+                    {#                        </form>#}
+
+                    <a href="#">
+                        <button type="button" class="btn btn-success" id="delPro">导出Excel</button>
+                    </a>
+                </div>
+
+            </th>
+        </tr>
+    </table>
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,252 @@
+{% load static %}
+{% load filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            $('#newNav').click(function () {
+                window.location.href = "{% url 'user_manage_add' %}";
+            });
+        });
+
+
+        function checkall() {
+            var alls = document.getElementsByName("check");
+            var ch = document.getElementById("checkall");
+            if (ch.checked) {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = false;
+                }
+            }
+        }
+
+        function delAll() {
+            var alls = document.getElementsByName("u_box");
+            var ids = new Array();
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    ids.push(alls[i].value);
+                }
+            }
+            if (ids.length > 0) {
+                if (confirm("确认删除?")) {
+                    {% comment %}.ajax({
+                        url:{% url '' %},
+                        type:'POST',
+
+
+                    }){% endcomment %}
+
+
+
+
+                    alert("删除成功!");
+                }
+            } else {
+                alert("请选中要删除的项");
+            }
+        }
+    </script>
+</head>
+<body>
+
+{#<form action="{% url 'user_manage_search' %}" method="post" class="definewidth m20">#}
+<form action="{% url 'user_manage_search' %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            {#            <td width="10%" class="tableleft">医生编号：</td>#}
+            {#            <td><input type="text" name="pname" value=""/></td>#}
+
+            {#            <td width="10%" class="tableleft">医生姓名：</td>#}
+            {#            <td><input type="text" name="pname" value=""/></td>#}
+            {##}
+            {#            <td width="10%" class="tableleft">科室：</td>#}
+            {#            <td><input type="text" name="pname" value=""/></td>#}
+
+            <td colspan="6">
+                <center>
+                    <td>姓名：&nbsp;
+                        <input type="text" name="u_content" placeholder="通过姓名查询">
+
+                        <button  class="btn btn-success" type="submit">查询</button>
+                    </td>
+
+                    <td>
+                        <a href="{% url 'user_manage' %}">
+                            <button type="button" class="btn btn-success" name="backid" id="backid">返回列表</button>
+                        </a>
+                    </td>
+            {#                    <button type="submit" class="btn btn-primary" type="button">清空</button>#}
+                </center>
+            </td>
+        </tr>
+    </table>
+</form>
+
+
+
+{% if name %}
+    {#     查询表格     #}
+    <table class="table table-bordered table-hover definewidth m10">
+        <thead>
+        <tr>
+{#            <th>角色</th>#}
+            <th>姓名</th>
+            <th>编号</th>
+            <th>性别</th>
+            <th>年龄</th>
+            <th>状态</th>
+            <th>电话号码</th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            {% for user in users %}
+                <tr>
+{#                    <td style="vertical-align:middle;">{{ user.user_role_id }}</td>#}
+                    <td style="vertical-align:middle;">{{ user.user_name }}</td>
+                    <td style="vertical-align:middle;">{{ user.id }}</td>
+                    <td style="vertical-align:middle;">{{ user.user_gender }}</td>
+                    <td style="vertical-align:middle;">{{ user.user_age }}</td>
+                    <td style="vertical-align:middle;">{{ user.user_status }}</td>
+                    <td style="vertical-align:middle;">{{ user.user_phone }}</td>
+                    <td style="vertical-align:middle;">
+                        <a href="{% url 'user_manage_look' user_id=user.id %}">详情</a>
+                        &nbsp;&nbsp;
+                        <a href="{% url 'user_manage_edit' user_id=user.id %}">更改</a>
+                        &nbsp;&nbsp;
+                        <a href="{% url 'user_manage_del' user_id=user.id %}">删除</a>
+                        &nbsp;&nbsp;
+                    </td>
+{#                    复选框#}
+                    <td><input type="checkbox" id="checkall" onChange="checkall();" name="u_box" value="{{ user.id }}"></td>
+                </tr>
+            {% endfor %}
+        </tr>
+        </tbody>
+    </table>
+
+
+
+{% else %}
+    {#           首页表格        #}
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td>
+                {% for role in roles %}
+                    &nbsp;<a href="{% url 'user_manage_type_look' id=role.id %}"><input type="button" value="{{ role.role_name }}" class="btn btn-success"></a>&nbsp;
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+
+
+
+<table class="table table-bordered table-hover definewidth m10">
+<thead>
+<tr>
+    <th>姓名</th>
+{#            <th>科室</th>#}
+    <th>编号</th>
+    <th>性别</th>
+    <th>年龄</th>
+    <th>状态</th>
+    <th>电话号码</th>
+    <th>操作</th>
+    <th></th>
+</tr>
+</thead>
+<tbody>
+    {% for user in users %}
+        <tr>
+            <td style="vertical-align:middle;">{{ user.user_name }}</td>
+{#                    <td style="vertical-align:middle;">{{ user.doctor_belong_id }}</td>#}
+            <td style="vertical-align:middle;">{{ user.id }}</td>
+            <td style="vertical-align:middle;">{{ user.user_gender }}</td>
+            <td style="vertical-align:middle;">{{ user.user_age }}</td>
+            <td style="vertical-align:middle;">{{ user.user_status }}</td>
+            <td style="vertical-align:middle;">{{ user.user_phone }}</td>
+            <td style="vertical-align:middle;">
+                <a href="{% url 'user_manage_look' user_id=user.id %}">详情</a>
+                &nbsp;&nbsp;
+                <a href="{% url 'user_manage_edit' user_id=user.id %}">更改</a>
+                &nbsp;&nbsp;
+                <a href="{% url 'user_manage_del' user_id=user.id %}">删除</a>
+                &nbsp;&nbsp;
+                <p></p>
+            </td>
+            <td><input type="checkbox" id="checkall" onChange="checkall();"></td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+
+
+
+
+{#    分页#}
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <th colspan="5">
+                <div class="inline pull-right page">
+                    10122 条记录 1/507 页 <a href='#'>下一页</a> <span class='current'>1</span><a href='#'>2</a><a
+                        href='/chinapost/index.php?m=Label&a=index&p=3'>3</a><a href='#'>4</a><a href='#'>5</a> <a
+                        href='#'>下5页</a>
+                    <a href='#'>最后一页</a>
+                </div>
+
+                <div>
+                    {% comment %}<button
+                            type="button" class="btn btn-success" id="delPro" onClick="delAll();">删除选中
+                    </button>{% endcomment %}
+
+                    <a href="#">
+                        <button type="button" class="btn btn-success" id="delPro">导出Excel</button>
+                    </a>
+                </div>
+            </th>
+        </tr>
+    </table>
+{% endif %}
+</body>
+</html>

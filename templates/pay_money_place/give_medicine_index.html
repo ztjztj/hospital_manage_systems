@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>发药--中软高科-2015</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+        {#$(function () {#}
+        {#$('#newNav').click(function(){#}
+        {#		window.location.href="";#}
+        {# });#}
+        {# });#}
+
+        function checkall() {
+            var alls = document.getElementsByName("check");
+            var ch = document.getElementById("checkall");
+            if (ch.checked) {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = false;
+                }
+            }
+        }
+        function delAll() {
+            var alls = document.getElementsByName("check");
+            var ids = new Array();
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    ids.push(alls[i].value);
+                }
+            }
+            if (ids.length > 0) {
+                $.ajax({
+                    url: '{% url "del_patient" %}',
+                    type: 'post',
+                    data: {'check':ids.toString()},
+                    success:function (data) {
+                        for (var i in data.check){
+                        $('#check1_'+data.check[i]).remove()}
+                    }
+                })
+        }else
+            {alert("请选中要操作的项");}
+        }
+    </script>
+</head>
+<body>
+
+<form action="{% url 'inquire' %}" method="post" class="definewidth m20">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td width="10%" class="tableleft">病例号：</td>
+            <td><input type="text" name="pname" value="" required="required"/></td>
+            <td colspan="2">
+                <center>
+                    <button type="submit" class="btn btn-primary" type="button">查询</button>
+                    <button type="reset" class="btn btn-primary" type="button">清空</button>
+                </center>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<table class="table table-bordered table-hover definewidth m10">
+    <thead>
+    <tr>
+        <th><input type="checkbox" id="checkall" onChange="checkall();"></th>
+        <th>病历号</th>
+        <th>姓名</th>
+        <th>负责人</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    {% for all_datum in all_data %}
+        <tr id="check1_{{ all_datum.id }}">
+            <td style="vertical-align:middle;"><input type="checkbox" name="check" value="{{ all_datum.id }}"></td>
+            <td style="vertical-align:middle;">{{ all_datum.mediacal_redord_NO }}</td>
+            <td style="vertical-align:middle;">{{ all_datum.patient_name }}</td>
+            <td style="vertical-align:middle;">{{ all_datum.doctor }}</td>
+            <td style="vertical-align:middle;"><a href="{% url 'give_detail' all_datum.id %}">发药</a>&nbsp;&nbsp;&nbsp;<a
+                    href="{% url 'medicine_look' all_datum.id %}">详情...</a></td>
+        </tr>
+    {% endfor %}
+</table>
+
+<table class="table table-bordered table-hover definewidth m10">
+    <tr>
+        <th colspan="5">
+            <ul class="pagination pull-right page" style="margin: 0 0">
+                <li><a href="?page=1">首页</a></li>
+                {% if all_data.has_previous %}
+                    <li><a href="?page={{ all_data.previous_page_number }}">上一页</a></li>
+                {% endif %}
+                {% for num in all_data.paginator.page_range %}
+                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                {% endfor %}
+                {% if all_data.has_next %}
+                    <li><a href="?page={{ all_data.next_page_number }}">下一页</a></li>
+                {% endif %}
+                {% if all_data %}
+                    <li><a href="?page={{ all_data.paginator.num_pages }}">尾页</a></li>
+                {% endif %}
+
+            </ul>
+            <button type="button" class="btn btn-success" id="delPro" onClick="delAll();">删除勾选内容</button>
+        </th>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,265 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>药品查询--中软高科-2015</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="http://libs.baidu.com/jquery/1.10.2/jquery.min.js" crossorigin="anonymous">
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script><script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+
+        function checkall() {
+            var alls = document.getElementsByName("check");
+            var ch = document.getElementById("checkall");
+            if (ch.checked) {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = false;
+                }
+            }
+        }
+
+        function delAll() {
+            var alls = document.getElementsByName("check");
+            var ids = new Array();
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    ids.push(alls[i].value);
+                }
+            }
+            if (ids.length > 0) {
+                if (confirm("确认操作?")) {
+                    alert("成功!");
+                }
+            } else {
+                alert("请选中要操作的项");
+            }
+        }
+    </script>
+    <script src="/medicine_house/static/js/jquery-1.12.4.min.js"></script>
+    {% comment %} <script>
+        function checka(){
+			var alls=document.getElementsByName("check1");
+			var ch=new Array()
+            for(var i=0;i<alls.length;i++){
+              if(alls[i].checked){
+                  ch.push(alls[i].value)
+              }
+           }
+           if(ch.length>0){
+              $.ajax({
+                  'url':'{% url "medicine_true_select" %}',
+                  'type':'post',
+                  'data':{'check1':ch.toLocaleString()},
+                  success:function (data) {
+                      alert(data.res)
+
+                  }
+              })
+               }
+           }
+    </script>{% endcomment %}
+
+
+</head>
+<body>
+<form action="{% url 'medicine_house' %}" method="post" class="definewidth m20">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td width="10%" class="tableleft">药品名称：</td><td><input class='medname ' type="text" name="mecidine_name" value="" required="required"/></td>
+
+            <td width="10%" class="tableleft">药品类型：</td>
+            <td><select name="selectmed">
+                <option>外科</option>
+                <option>心血管科</option>
+                <option>急诊科</option>
+                <option>骨科</option>
+            </select></td><td style="text-align: center;width:20%">
+                <button type="submit" class="btn btn-primary" style="right:180px;position: absolute ">查询</button>
+                <button type="reset" class="btn btn-primary" style="right:100px;position: absolute ">清空</button>
+            </td></tr></table>
+</form>
+{% if selects %}
+
+    <form action="{% url 'medicine_delete1' %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+
+        <thead>
+        <tr>
+            <th><input type="checkbox" id="checkall" onChange="checkall();"></th>
+            <th>药品编号</th>
+            <th>药品名称</th>
+            <th>药品类型</th>
+            <th>简单描述</th><th>剩余量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tr>
+            <td style="vertical-align:middle;"><input type="checkbox" name="check" value="{{ selects.id }}"></td>
+
+            <td style="vertical-align:middle;">{{ selects.id }}</td>
+            <td style="vertical-align:middle;">{{ selects.medicine_name }}</td>
+            <td style="vertical-align:middle;">{{ selects.fk_medicine_type_department }}</td>
+            <td style="vertical-align:middle;">{{ selects.medicine_message }}</td>
+
+
+            <td style="vertical-align:middle;">{{ selects.medicine_number }}袋</td>
+
+            <td style="vertical-align:middle;">
+                <a href="{% url 'medicine_update' mid=selects.id %}">更改</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'medicine_insert' mid=selects.id %}">添加库存</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'medicine_detail' mid=selects.id %}">详情>>></a>
+            </td>
+        </tr>
+    </table>
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <th colspan="5">
+                <ul class="pagination" style="margin: auto">
+
+                    <li style="width: 200px"><a href="?page=1 ">首页</a></li>
+
+                    {% if meds.has_previous %}
+                        <li><a href="?page={{ meds.previous_page_number }}">上一页</a></li>
+                    {% endif %}
+                    {% for num in meds.paginator.page_range %}
+                        <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endfor %}
+                    {% if meds.has_next %}
+                        <li><a href="?page={{ meds.next_page_number }}">下一页</a></li>
+                    {% endif %}
+                    {% if meds %}
+                        <li><a href="?page={{ meds.paginator.num_pages }}">尾页</a></li>
+                    {% endif %}
+                    <a href="{% url 'new_medicine' %}">
+                        <button type="button" class="btn btn-success" id="newNav">添加新药</button>
+                    </a>
+                    <input type="submit" class="btn btn-success" value="删除所选"></input>
+
+                    <a href="{% url 'select_excel' eid=selects.id %}">
+                        <button type="button" class="btn btn-success" id="delPro">导出Excel</button>
+                    </a>
+                </ul>
+        </tr>
+        </th>
+
+    </table>
+
+{% else %}
+    {% if noselect %}
+
+        <h1>{{ noselect }}</h1>
+
+        <a href="{% url 'medicine_house' %}" style="list-style: none;">
+            <button type="button" class="btn btn-success" name="backid" id="backid">返回列表</button>
+        </a>
+    {% endif %}
+
+    </form>
+{% endif %}
+
+
+{% if meds %}
+
+    <form action="{% url 'medicine_delete' %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+
+        <thead>
+        <tr>
+            <th><input type="checkbox" id="checkall" onChange="checkall();"></th>
+            <th>药品编号</th>
+            <th>药品名称</th>
+            <th>药品类型</th>
+            <th>简单描述</th><th>剩余量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        {% for med in meds %}<tr>
+                <td style="vertical-align:middle;"><input type="checkbox" name="check1" value="{{ med.id }}"
+                                                          id="check1"></td>
+
+                <td style="vertical-align:middle;">{{ med.id }}</td>
+                <td style="vertical-align:middle;">{{ med.medicine_name }}</td>
+                <td style="vertical-align:middle;">{{ med.fk_medicine_type_department }}</td>
+                <td style="vertical-align:middle;">{{ med.medicine_message }}</td>
+
+                <td style="vertical-align:middle;">{{ med.medicine_number }}袋</td>
+
+
+                <td style="vertical-align:middle;">
+                    <a href="{% url 'medicine_update' mid=med.id %}">更改</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'medicine_insert' mid=med.id %}">添加库存</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'medicine_detail' mid=med.id %}">详情>>></a>
+
+                </td>
+            </tr>{% endfor %}
+    </table>
+{% endif %}
+</form>
+<table class="table table-bordered table-hover definewidth m10">
+    <tr>
+        <th colspan="5">
+            <div class="inline pull-right page" style="left: 10px;position: absolute;margin: -4px">
+                <a href="{% url 'new_medicine' %}">
+                    <button type="button" class="btn btn-success" id="newNav">添加新药</button>
+                </a><input type="submit" class="btn btn-success" value="删除所选"></input>
+
+                <a href="{% url 'export_excel' %}">
+                    <button type="button" class="btn btn-success" id="delPro">导出Excel</button>
+                </a></div>
+
+            <div class="inline pull-right page">
+                <ul class="pagination" style="margin: auto">
+                    <a href='?page=1'>第一页</a>
+                    {% if meds.has_previous %}
+                        <a href="?page={{ meds.previous_page_number }}">上一页</a>
+                    {% endif %}
+                    <span class='current'>
+             {% for num in meds.paginator.page_range %}
+                 <a href="?page={{ num }}">{{ num }}</a>
+             {% endfor %}</span>
+                    {% if meds.has_next %}
+                        <a href="?page={{ meds.next_page_number }}">下一页</a>
+                    {% endif %}
+                    {% if meds %}
+                        <a href="?page={{ meds.paginator.num_pages }}">尾页</a>
+                    {% endif %}
+                    {% if count %}
+                        &nbsp;&nbsp;&nbsp;共<span class='current'>{{ count }}</span>条记录
+
+                    {% endif %}
+                </ul>
+            </div>
+
+        </th>
+    </tr>
+
+</table>
+</body>
+</html>

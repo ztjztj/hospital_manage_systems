@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>收费项目登记</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" crossorigin="anonymous">
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckeditor.js' %}"></script>
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            $('#newNav').click(function () {
+                window.location.href = "charge-edit1.html";
+            });
+        });
+
+        function checkall() {
+            var alls = document.getElementsByName("check");
+            var ch = document.getElementById("checkall");
+            if (ch.checked) {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = true;
+                }
+            } else {
+                for (var i = 0; i < alls.length; i++) {
+                    alls[i].checked = false;
+                }
+            }
+        }
+
+        function delAll() {
+            var alls = document.getElementsByName("check");
+            var ids = new Array();
+            for (var i = 0; i < alls.length; i++) {
+                if (alls[i].checked) {
+                    ids.push(alls[i].value);
+                }
+            }
+            if (ids.length > 0) {
+                if (confirm("确认操作?")) {
+                    alert("成功!");
+                }
+            } else {
+                alert("请选中要操作的项");
+            }
+        }
+
+        $(function () {
+            $('#backid').click(function () {
+                window.location.href = "dispensing.html";
+            });
+        });
+    </script>
+</head>
+<body>
+{#{% if messages %}#}
+    <div class="definewidth m20">
+    <form action="{% url 'find_0' %}" method="post">
+        <table class="table table-bordered table-hover definewidth m10">
+            <tr>
+                <td width="10%" class="tableleft">病人查询：</td>
+                <td width="20%">
+                    <input type="text" name="pname">
+                </td>
+                <td>
+                    <input type="submit" value="查询">
+                </td>
+            </tr>
+        </table>
+    </form>
+    </div>
+{#<div class="definewidth m20">#}
+{#    <table class="table table-bordered table-hover definewidth m10">#}
+{#        <tr>#}
+{#            <td width="10%" class="tableleft">病症类型：</td>#}
+{#            <td>#}
+{#                {% if messages_1 %}#}
+{#                    {% for message_2 in messages_1 %}#}
+{#                        <a href="{% url 'patient_list_1'  id=message_2.patient_status %}" style="text-decoration: none">#}
+{#                            &nbsp;#}
+{#                            <input type="submit" value="{{ message_2.patient_status }}">&nbsp;#}
+{#                        </a>#}
+{#                    {% endfor %}#}
+{#                {% else %}#}
+{#                    <option></option>#}
+{#                {% endif %}#}
+{#            </td>#}
+{#        </tr>#}
+{##}
+{#    </table>#}
+{#</div>#}
+<table class="table table-bordered table-hover definewidth m10">
+    <thead>
+    <tr>
+        <th>编号</th>
+        <th>姓名</th>
+        <th>身份证号</th>
+        <th>病症</th>
+        <th>过敏史</th>
+        <th>当前日期</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if messages %}
+        {% for message in messages %}
+            <tr>
+                <td style="vertical-align:middle;">{{ message.id }}</td>
+                <td style="vertical-align:middle;">{{ message.patient_name }}</td>
+                <td style="vertical-align:middle;">{{ message.patient_card }}</td>
+                <td style="vertical-align:middle;">{{ message.patient_status }}</td>
+                <td style="vertical-align:middle;">{{ message.patient_history }}</td>
+                <td style="vertical-align:middle;">{{ message.patient_one_enter_time }}</td>
+                <td style="vertical-align:middle;" width="16%">
+                    &nbsp;&nbsp;&nbsp;<a href="{% url 'detail' ids=message.id %}" style="text-decoration: none" >
+                        <button type="submit">病例详情</button>
+                    </a>&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'dispensing' ids=message.id %}" style="text-decoration: none">
+                        <button type="submit">开始诊断</button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="4">暂无人挂号到您</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>
+<table class="table table-bordered table-hover definewidth m10">
+    <thead>
+    {% if messages %}
+        <ul class="pagination">
+         <li><a href="?page=1">首页</a></li>
+        {% if messages.has_previous %}
+            <li><a href="?page={{ messages.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        {% for num in messages.paginator.page_range %}
+            <li><a href="?page={{ num }}">{{ num }}</a></li>
+        {% endfor %}
+        {% if messages.has_next %}
+            <li><a href="?page={{ messages.next_page_number }}">下一页</a></li>
+        {% endif %}
+        {% if messages %}
+            <li><a href="?page={{ messages.paginator.num_pages }}">尾页</a></li>
+        {% endif %}
+    </ul>
+    {% elif messages_one %}
+        <ul class="pagination">
+         <li><a href="?page=1">首页</a></li>
+        {% if messages_one.has_previous %}
+            <li><a href="?page={{ messages_one.previous_page_number }}">上一页</a></li>
+        {% endif %}
+        {% for num in messages_one.paginator.page_range %}
+            <li><a href="?page={{ num }}">{{ num }}</a></li>
+        {% endfor %}
+        {% if messages_one.has_next %}
+            <li><a href="?page={{ messages_one.next_page_number }}">下一页</a></li>
+        {% endif %}
+        {% if messages_one %}
+            <li><a href="?page={{ messages_one.paginator.num_pages }}">尾页</a></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+
+    <!-- 分页结束 -->
+    </thead>
+</table>
+{#{% elif messages2 %}#}
+
+{#<table class="table table-bordered table-hover definewidth m10">#}
+{#    <thead>#}
+{#    <tr>#}
+{#        <th>编号</th>#}
+{#        <th>姓名</th>#}
+{#        <th>身份证号</th>#}
+{#        <th>病症</th>#}
+{#        <th>过敏史</th>#}
+{#        <th>当前日期</th>#}
+{#        <th>操作</th>#}
+{#    </tr>#}
+{#    </thead>#}
+{#    <tbody>#}
+{#    {% if messages2 %}#}
+{#        {% for message1 in messages2 %}#}
+{#            <tr>#}
+{#                <td style="vertical-align:middle;">{{ message1.id }}</td>#}
+{#                <td style="vertical-align:middle;">{{ message1.patient_name }}</td>#}
+{#                <td style="vertical-align:middle;">{{ message1.patient_card }}</td>#}
+{#                <td style="vertical-align:middle;">{{ message1.patient_status }}</td>#}
+{#                <td style="vertical-align:middle;">{{ message1.patient_history }}</td>#}
+{#                <td style="vertical-align:middle;">{{ message1.patient_one_enter_time }}</td>#}
+{#                <td style="vertical-align:middle;">#}
+{#                    <a href="{% url 'detail' id=message1.id %}">#}
+{#                        <button type="submit">病例详情</button>#}
+{#                    </a>#}
+{#                    <a href="{% url 'dispensing' id=message1.id %}">#}
+{#                        <button type="submit">开始诊断</button>#}
+{#                    </a>#}
+{#                </td>#}
+{#            </tr>#}
+{#        {% endfor %}#}
+{#    {% else %}#}
+{#        <tr>#}
+{#            <td colspan="4">无数据</td>#}
+{#        </tr>#}
+{#    {% endif %}#}
+{#    </tbody>#}
+{#</table>#}
+{#    <table class="table table-bordered table-hover definewidth m10">#}
+{#    <thead>#}
+{#    <ul class="pagination">#}
+{#        <li><a href="?page1=1">首页</a></li>#}
+{#        {% if messages2.has_previous %}#}
+{#            <li><a href="?page1={{ messages2.previous_page_number }}">上一页</a></li>#}
+{#        {% endif %}#}
+{#        {% for num in messages2.paginator.page_range %}#}
+{#            <li><a href="?page1={{ num }}">{{ num }}</a></li>#}
+{#        {% endfor %}#}
+{#        {% if messages2.has_next %}#}
+{#            <li><a href="?page1={{ messages2.next_page_number }}">下一页</a></li>#}
+{#        {% endif %}#}
+{#        {% if messages2 %}#}
+{#            <li><a href="?page1={{ messages2.paginator.num_pages }}">尾页</a></li>#}
+{#        {% endif %}#}
+{#    </ul>#}
+{#    <!-- 分页结束 -->#}
+{#    </thead>#}
+{#</table>#}
+
+{#{% endif %}#}
+
+</body>
+</html>

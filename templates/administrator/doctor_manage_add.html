@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>添加医生--中软高科-2015</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
+    <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+    {#    <script type="text/javascript" src="../Js/jquery.sorted.js"></script>#}
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckform.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/ckeditor.js' %}"></script>
+
+
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+        }
+
+        .sidebar-nav {
+            padding: 9px 0;
+        }
+
+        @media (max-width: 980px) {
+            /* Enable use of floated navbar text */
+            .navbar-text.pull-right {
+                float: none;
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            $('#backid').click(function () {
+                window.location.href = "{% url 'doctor_manage' %}";
+            });
+        });
+    </script>
+</head>
+<body>
+<form action="{% url 'doctor_manage_add' %}" method="post">
+    <table class="table table-bordered table-hover definewidth m10">
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>账号</td>
+            <td><input type="text" name="user_name"></td>
+        </tr>
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>角色</td>
+            <td><input type="text" name="user_role"></td>
+        </tr>
+
+        {% comment %}<tr>
+            <td class="tableleft"><font color="red">*</font>角色</td>
+            <td>
+            	<select name="role">
+        			<option value="">--请选择--
+        			<option value="1">药房
+        			<option value="2">缴费
+            		<option value="3">挂号
+            		<option value="4">医生
+       			 </select>
+        	</td>
+        </tr>{% endcomment %}
+
+        <tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>所属科室</td>
+            <td><input type="text" name="user_depart"></td>
+        </tr>
+
+        {% comment %}<tr>
+            <td width="10%" class="tableleft"><font color="red">*</font>所属科室</td>
+            <td><select>
+                <option>急诊科</option>
+                <option>骨科</option>
+                <option>血液科</option>
+            </select></td>
+        </tr>{% endcomment %}
+
+        <tr>
+            <td>状态</td>
+{#            <td><input type="text" name="user_status"></td>#}
+            <td>
+                 <a href="{% url 'start_and_stop_detail' num=1 %}">
+                <input type="submit" value="启用表">
+                </a>
+               <a href="{% url 'start_and_stop_detail' num=0 %}">
+                <input type="submit" value="禁用表">
+           </td>
+
+        </tr>
+
+        {% comment %}<tr>
+            <td class="tableleft"><font color="red">*</font>状态</td>
+            <td>
+                <input type="radio" name="status" value="0" checked/> 启用
+              <input type="radio" name="status" value="1" /> 禁用
+            </td>
+        </tr>{% endcomment %}
+
+        {% comment %}<tr>
+            <td width="10%" class="tableleft">学历</td>
+            <td><input type="text" name="user_level"></td>
+        </tr>
+        <tr>
+            <td width="10%" class="tableleft">学历</td>
+            <td><select>
+                <option>专科</option>
+                <option>本科</option>
+                <option>博士</option>
+                <option>博士后</option>
+            </select></td>
+        </tr>{% endcomment %}
+
+
+    </table>
+    <center>
+        <input type="submit" value="确认添加">
+        <a href="{% url 'doctor_manage' %}">
+            <input type="button" value="返回列表">
+        </a>
+    </center>
+</form>
+
+
+</body>
+</html>
